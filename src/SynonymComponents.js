@@ -1,5 +1,6 @@
 import React from 'react';
-
+import './index.css'
+import './SynonymComponents.css';
 
 export default class SynonymDiv extends React.Component {
   constructor(props) {
@@ -16,8 +17,8 @@ export default class SynonymDiv extends React.Component {
     const wordID = this.state.wordID;
     if (!wordID) {
       return (
-        <div>
-          <SynonymSearchBox id='search-box' word='' onUpdate={this.state.onUpdate} />
+        <div id='synonym-div'>
+          <SynonymSearchBox word='' onUpdate={this.state.onUpdate} />
           <p>Please enter a word.</p>
         </div>
       );
@@ -25,8 +26,8 @@ export default class SynonymDiv extends React.Component {
 
     const word = this.state.internTable[wordID].name;
     return (
-      <div>
-        <SynonymSearchBox id='search-box' word={word} onUpdate={this.state.onUpdate} />
+      <div id='synonym-div'>
+        <SynonymSearchBox word={word} onUpdate={this.state.onUpdate} />
         <SynonymList wordID={wordID} internTable={this.state.internTable} />
       </div>
     );
@@ -54,7 +55,10 @@ class SynonymSearchBox extends React.Component {
 
   handleInputBlur = (evt) => {
     const newWord = evt.target.value;
-    if (newWord !== this.state.word) {
+    const currentWord = this.state.word;
+    if (newWord === '') {
+      evt.target.value = currentWord;
+    } else if (newWord !== currentWord) {
       this.state.onUpdate(newWord);
     }
   }
@@ -68,7 +72,7 @@ class SynonymSearchBox extends React.Component {
 
   render() {
     return (
-      <input id='step-input' value={this.state.searchVal}
+      <input id='search-box' value={this.state.searchVal}
         onChange={(e) => this.handleInput(e)}  onBlur={(e) => this.handleInputBlur(e)}  onKeyPress={(e) => this.handleKeyPress(e)}
       />
     );
@@ -103,11 +107,11 @@ class SynonymList extends React.Component {
     }
 
     return (
-      <div>
+      <div id='synonym-list'>
         <h2 id='syn-head'>{`${word} (${wordID})`}</h2>
         <ul id='syn-list'>
           {synonyms.map(synonym => (
-            <li key={`syn-${synonym}`}>{`${this.state.internTable[synonym].name} (${synonym})`}</li>
+            <li key={`syn-${synonym}`}><span class='clickable'>{`${this.state.internTable[synonym].name} (${synonym})`}</span></li>
           ))}
         </ul>
       </div>
