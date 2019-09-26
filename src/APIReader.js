@@ -23,8 +23,12 @@ export default class APIReader {
       }
 
       console.log('Synonym IDs');
-      console.log(internData.synonyms);
-      console.log(internData);
+      console.log(this.internTable[wordID].synonyms);
+      console.log('Intern table:');
+      console.log(this.internTable);
+      console.log('Lookup table:');
+      console.log(this.lookupTable);
+      return;
     }
 
     wordID = this.nextID;
