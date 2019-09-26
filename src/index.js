@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 import App from './App';
 import APIReader from './APIReader';
@@ -23,7 +24,7 @@ export default class Doc extends React.Component {
   }
 
   componentDidMount() {
-    document.title = "Thesaurus";
+    document.title = "React Thesaurus";
     this.setState({loaded: true});
   }
 
