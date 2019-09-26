@@ -28,7 +28,7 @@ export default class SynonymDiv extends React.Component {
     return (
       <div id='synonym-div'>
         <SynonymSearchBox word={word} onUpdate={this.state.onUpdate} />
-        <SynonymList wordID={wordID} internTable={this.state.internTable} />
+        <SynonymList wordID={wordID} internTable={this.state.internTable} onClick={this.state.onUpdate} />
       </div>
     );
   }
@@ -73,7 +73,9 @@ class SynonymSearchBox extends React.Component {
   render() {
     return (
       <input id='search-box' value={this.state.searchVal}
-        onChange={(e) => this.handleInput(e)}  onBlur={(e) => this.handleInputBlur(e)}  onKeyPress={(e) => this.handleKeyPress(e)}
+        onChange={(e) => this.handleInput(e)}
+        onBlur={(e) => this.handleInputBlur(e)}
+        onKeyPress={(e) => this.handleKeyPress(e)}
       />
     );
   }
@@ -87,6 +89,7 @@ class SynonymList extends React.Component {
     this.state = {
       wordID: props.wordID,
       internTable: props.internTable,
+      onClick: props.onClick,
     };
   }
 
@@ -111,10 +114,31 @@ class SynonymList extends React.Component {
         <h2 id='syn-head'>{`${word} (${wordID})`}</h2>
         <ul id='syn-list'>
           {synonyms.map(synonym => (
-            <li key={`syn-${synonym}`}><span class='clickable'>{`${this.state.internTable[synonym].name} (${synonym})`}</span></li>
+            <SynonymCell
+              key={`syn-${synonym}`}
+              wordID={synonym}
+              word={this.state.internTable[synonym].name}
+              onClick={this.state.onClick}
+            />
           ))}
         </ul>
       </div>
     );
   }
+}
+
+
+function SynonymCell(props) {
+  const wordID = props.wordID;
+  const word = props.word;
+  return (
+    <li>
+      <span
+        className='clickable'
+        onClick={(e) => props.onClick(word)}
+      >
+        {`${word} (${wordID})`}
+      </span>
+    </li>
+  );
 }
