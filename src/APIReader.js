@@ -10,18 +10,21 @@ export default class APIReader {
 
   async internWord(word) {
     let wordID;
+    let internData;
     if ((word in this.lookupTable)) {
       wordID = this.lookupTable[word];
-      const internData = this.internTable[wordID];
+      internData = this.internTable[wordID];
       if (!internData.synonyms.length) {
-        internData.synonyms = await this.getOrFetchSynonyms(word);
+        internData.synonyms = await this.getOrFetchSynonyms(word)
+                                      .catch(error => {return Promise.reject(error)});
         console.log(`Fetched synonyms for ${word} (${wordID})`);
+      } else {
+        console.log(`Loaded synonyms for ${word} (${wordID})`);
       }
 
       console.log('Synonym IDs');
       console.log(internData.synonyms);
       console.log(internData);
-      return internData.synonyms;
     }
 
     wordID = this.nextID;
@@ -30,7 +33,15 @@ export default class APIReader {
     this.internTable[wordID] = {name: word, synonyms: []};
     this.incrementID();
 
-    this.internTable[wordID].synonyms = await this.getOrFetchSynonyms(word);
+    this.internTable[wordID].synonyms =
+      await this.getOrFetchSynonyms(word)
+              .catch(error => {
+                console.log(`Releasing ${word} due to error`);
+                delete this.lookupTable[word];
+                delete this.internTable[wordID];
+                this.incrementID(-1);
+                return Promise.reject(error)
+              });
 
     console.log('Synonym IDs');
     console.log(this.internTable[wordID].synonyms);
@@ -42,7 +53,9 @@ export default class APIReader {
 
   async getOrFetchSynonyms(word) {
     const synonymIDs = [];
-    const synonyms = await this.fetchSynonyms(word);
+    const synonyms = await this.fetchSynonyms(word)
+                              .catch(error => {return Promise.reject(error)});
+
     for (let i = 0; i < synonyms.length; i++) {
       const word = synonyms[i];
       let id;
@@ -66,7 +79,9 @@ export default class APIReader {
     const baseURL = 'https://words.bighugelabs.com/api/2';
     const URL = `${baseURL}/${APIKey}/${word}/json`;
   
-    const response = await fetch(URL);
+    const response = await fetch(URL)
+                            .catch(error => {return Promise.reject(error)});
+
     const data = await response.json();
   
     const wordForm = Object.keys(data)[0];

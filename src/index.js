@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import APIReader from './APIReader';
-import {SynonymList} from './SynonymComponents'
+import SynonymDiv from './SynonymComponents'
 
 
 export default class Doc extends React.Component {
@@ -13,6 +13,8 @@ export default class Doc extends React.Component {
     this.state = {
       internTable: {},
       wordID: '',
+      errors: 0,
+      loaded: false,
     };
 
     this.apiReader = new APIReader();
@@ -22,7 +24,7 @@ export default class Doc extends React.Component {
 
   componentDidMount() {
     document.title = "Thesaurus";
-    this.updateWord('quick');
+    this.setState({loaded: true});
   }
 
 
@@ -31,27 +33,32 @@ export default class Doc extends React.Component {
       .then(() => this.setState({
         internTable: this.apiReader.internTable,
         wordID: this.apiReader.lookupTable[word],
-      }), reason => (() => {
-        alert(`Unable to find ${word} in the thesaurus. Reverting to previous word.`);
+        errors: 0,
+      }), error => {
+        alert(`Unable to find "${word}" in the thesaurus. Reverting to previous word.`);
         this.setState((prevState, props) => ({
-          wordID: prevState.wordID,
+          errors: prevState.errors + 1, // Errors being changed in state allows rebuild of search box to reset the text
         }));
-      }));
+      });
   }
 
 
   render() {
-    const wordID = this.state.wordID;
-    if (!wordID) {
-      return (<div><p>Please enter a word.</p></div>);
+    if (!this.state.loaded) {
+      return null;
     }
 
-    console.log('Doc sees the following intern table');
-    console.log(this.state.internTable);
+    const wordID = this.state.wordID;
+    const synonymDiv = <SynonymDiv
+      key={`${wordID}SynDiv${this.state.errors}`}
+      wordID={wordID}
+      internTable={this.state.internTable}
+      onUpdate={this.updateWord}
+    />
 
     return (
       <div>
-        <SynonymList key={`${wordID}List`} wordID={wordID} internTable={this.state.internTable} />
+        {synonymDiv}
       </div>
     );
   }

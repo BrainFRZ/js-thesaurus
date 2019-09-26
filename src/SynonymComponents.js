@@ -1,14 +1,89 @@
 import React from 'react';
 
 
-export class SynonymList extends React.Component {
+export default class SynonymDiv extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       wordID: props.wordID,
       internTable: props.internTable,
+      onUpdate: props.onUpdate,
     }
+  }
+
+  render() {
+    const wordID = this.state.wordID;
+    if (!wordID) {
+      return (
+        <div>
+          <SynonymSearchBox id='search-box' word='' onUpdate={this.state.onUpdate} />
+          <p>Please enter a word.</p>
+        </div>
+      );
+    }
+
+    const word = this.state.internTable[wordID].name;
+    return (
+      <div>
+        <SynonymSearchBox id='search-box' word={word} onUpdate={this.state.onUpdate} />
+        <SynonymList wordID={wordID} internTable={this.state.internTable} />
+      </div>
+    );
+  }
+}
+
+
+class SynonymSearchBox extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      word: props.word,
+      searchVal: props.word,
+      onUpdate: props.onUpdate,
+    };
+  }
+
+
+  handleInput = (evt) => {
+    this.setState({
+      searchVal: evt.target.value,
+    });
+  }
+
+  handleInputBlur = (evt) => {
+    const newWord = evt.target.value;
+    if (newWord !== this.state.word) {
+      this.state.onUpdate(newWord);
+    }
+  }
+
+  handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      this.handleInputBlur(event);
+    }
+  }
+
+
+  render() {
+    return (
+      <input id='step-input' value={this.state.searchVal}
+        onChange={(e) => this.handleInput(e)}  onBlur={(e) => this.handleInputBlur(e)}  onKeyPress={(e) => this.handleKeyPress(e)}
+      />
+    );
+  }
+}
+
+
+class SynonymList extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      wordID: props.wordID,
+      internTable: props.internTable,
+    };
   }
 
   render() {
@@ -39,5 +114,3 @@ export class SynonymList extends React.Component {
     );
   }
 }
-
-
