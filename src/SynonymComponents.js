@@ -1,6 +1,8 @@
 import React from 'react';
 import './index.css'
 import './SynonymComponents.css';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 
 export default class SynonymDiv extends React.Component {
   constructor(props) {
@@ -72,11 +74,14 @@ class SynonymSearchBox extends React.Component {
 
   render() {
     return (
-      <input id='search-box' value={this.state.searchVal}
-        onChange={(e) => this.handleInput(e)}
-        onBlur={(e) => this.handleInputBlur(e)}
-        onKeyPress={(e) => this.handleKeyPress(e)}
-      />
+      <label>
+        Look up:
+        <input id='search-box' value={this.state.searchVal}
+          onChange={(e) => this.handleInput(e)}
+          onBlur={(e) => this.handleInputBlur(e)}
+          onKeyPress={(e) => this.handleKeyPress(e)}
+        />
+      </label>
     );
   }
 }
@@ -111,7 +116,11 @@ class SynonymList extends React.Component {
 
     return (
       <div id='synonym-list'>
-        <h2 id='syn-head'>{`${word} (${wordID})`}</h2>
+        <SynonymHead
+          key={`syn-head-${wordID}`}
+          word={word}
+          wordID={wordID}
+        />
         <ul id='syn-list'>
           {synonyms.map(synonym => (
             <SynonymCell
@@ -127,18 +136,49 @@ class SynonymList extends React.Component {
   }
 }
 
+function SynonymHead(props) {
+  const wordID = props.wordID;
+  const word = props.word;
+  return (
+    <h2 id='syn-head'>
+      <OverlayTrigger
+        key={`trigger-${wordID}`}
+        placement='right'
+        delay={{ show: 150, hide: 250 }}
+        overlay={
+          <Tooltip id={`tooltip-${wordID}`}>
+            Interned ID: {wordID}
+          </Tooltip>
+        }
+      >
+        <span>{word}</span>
+      </OverlayTrigger>
+    </h2>
+  );
+}
 
 function SynonymCell(props) {
   const wordID = props.wordID;
   const word = props.word;
   return (
     <li>
-      <span
-        className='clickable'
-        onClick={(e) => props.onClick(word)}
+      <OverlayTrigger
+        key={`trigger-${wordID}`}
+        placement='right'
+        delay={{ show: 150, hide: 250 }}
+        overlay={
+          <Tooltip id={`tooltip-${wordID}`}>
+            Interned ID: {wordID}
+          </Tooltip>
+        }
       >
-        {`${word} (${wordID})`}
-      </span>
+        <span
+          className='clickable'
+          onClick={(e) => props.onClick(word)}
+        >
+          {word}
+        </span>
+      </OverlayTrigger>
     </li>
   );
 }
