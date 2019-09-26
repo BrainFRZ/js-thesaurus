@@ -5,6 +5,7 @@ import './index.css';
 import App from './App';
 import APIReader from './APIReader';
 import SynonymDiv from './SynonymComponents'
+import InternDiv from './TableComponents';
 
 
 export default class Doc extends React.Component {
@@ -50,16 +51,24 @@ export default class Doc extends React.Component {
     }
 
     const wordID = this.state.wordID;
+    
     const synonymDiv = <SynonymDiv
       key={`${wordID}SynDiv${this.state.errors}`}
       wordID={wordID}
       internTable={this.state.internTable}
       onUpdate={this.updateWord}
-    />
+    />;
+
+    const internDiv = <InternDiv
+      key={`${wordID}IntDiv`}
+      internTable={this.state.internTable}
+      onUpdate={this.updateWord}
+    />;
 
     return (
       <div>
         {synonymDiv}
+        {internDiv}
       </div>
     );
   }

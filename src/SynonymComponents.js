@@ -1,8 +1,11 @@
 import React from 'react';
-import './index.css'
-import './SynonymComponents.css';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './index.css'
+import './SynonymComponents.css';
+
 
 export default class SynonymDiv extends React.Component {
   constructor(props) {

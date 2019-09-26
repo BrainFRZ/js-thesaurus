@@ -1,0 +1,52 @@
+/* [FONTS] */
+@font-face {
+  font-family: Poppins-Regular;
+  src: url('./fonts/Poppins-Regular.ttf'); 
+}
+
+@font-face {
+  font-family: Poppins-Bold;
+  src: url('./fonts/Poppins-Bold.ttf'); 
+}
+
+
+.intern-table {
+  font-family: Poppins-Regular;
+  width: 0 auto;
+  margin: 20px;
+  font-size: 1.15em;
+  border: 2px solid #000;
+  border-collapse: collapse;
+  justify-content: center;
+  text-align: center;
+}
+
+.intern-table td {
+  border: 1px solid #000;
+}
+
+.id-cell {
+  min-width: 3em;
+}
+
+.intern-table th {
+  border: 1px solid #000;
+  padding: 5px;
+  border-bottom: 2px solid #000;
+  text-align: center;
+}
+
+.intern-table tr td {
+  padding: 4px;
+  width: 0;
+  white-space: nowrap;
+}
+
+.table-title {
+  font-family: Poppins-Bold;
+  font-size: 1.50em;
+  padding: 10px 20px 10px 20px !important;
+  color: #C5D5CB;
+  text-align: center;
+  background-color: #34421E;
+}
