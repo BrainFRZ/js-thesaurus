@@ -66,17 +66,20 @@ export default class APIReader {
   }
 
   async fetchSynonyms(word) {
-    const baseURL = 'https://words.bighugelabs.com/api/2';
-    const URL = `${baseURL}/${APIKey}/${word}/json`;
-  
-    const response = await fetch(URL)
-                            .catch(error => {return Promise.reject(error)});
+    const response = await fetch(`https://wordsapiv1.p.rapidapi.com/words/${word}/synonyms`, {
+        "method": "GET",
+        "headers": {
+          "x-rapidapi-host": "wordsapiv1.p.rapidapi.com",
+          "x-rapidapi-key": APIKey,
+        }
+      });
+    
+    if (!response.ok) {
+      return Promise.reject(response.error);
+    }
 
     const data = await response.json();
-  
-    const wordForm = Object.keys(data)[0];
-    const synonyms = data[wordForm].syn.slice(0, this.size);
-
+    const synonyms = data.synonyms.slice(0, this.size);
     console.log(`Fetched synonyms for ${word}`);
     console.log(synonyms);
   
