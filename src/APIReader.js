@@ -21,13 +21,6 @@ export default class APIReader {
       } else {
         console.log(`Loaded synonyms for ${word} (${wordID})`);
       }
-
-      console.log('Synonym IDs');
-      console.log(this.internTable[wordID].synonyms);
-      console.log('Intern table:');
-      console.log(this.internTable);
-      console.log('Lookup table:');
-      console.log(this.lookupTable);
       return;
     }
 
@@ -46,13 +39,6 @@ export default class APIReader {
                 this.incrementID(-1);
                 return Promise.reject(error)
               });
-
-    console.log('Synonym IDs');
-    console.log(this.internTable[wordID].synonyms);
-    console.log('Intern table:');
-    console.log(this.internTable);
-    console.log('Lookup table:');
-    console.log(this.lookupTable);
   }
 
   async getOrFetchSynonyms(word) {
@@ -65,7 +51,7 @@ export default class APIReader {
       let id;
       if (word in this.lookupTable) {
         id = this.lookupTable[word];
-        console.log(`Pulling ${word} from ${id}`);
+        console.log(`Loading ${word} (${id})`);
       } else {
         id = this.nextID;
         console.log(`Interning ${word} as id ${id}`);
