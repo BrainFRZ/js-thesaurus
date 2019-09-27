@@ -66,7 +66,7 @@ export default class Doc extends React.Component {
     />;
 
     return (
-      <div>
+      <div id='doc-div'>
         {synonymDiv}
         {internDiv}
       </div>

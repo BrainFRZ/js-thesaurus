@@ -43,7 +43,7 @@ export default class InternDiv extends React.Component {
     }
 
     return (
-      <div>
+      <div id='intern-div'>
         <InternTable
           data={this.state.internTable}
           openTable={this.openTable}
@@ -80,7 +80,7 @@ function InternTable(props) {
 
   const rows = ids.map(id => (
     <tr key={`${id}row-intern`}>
-      <IDCell key={`${id}row-int-id`}  tableID={-1}  wordID={id}  word={data[id].name}  openTable={props.openTable} />
+      <IDCell key={`${id}row-int-id`}  fetched={data[id].synonyms.length > 0}  tableID={-1}  wordID={id}  word={data[id].name}  openTable={props.openTable} />
       <WordCell key={`${id}row-int-word`}  word={data[id].name}  onUpdate={props.onUpdate} />
     </tr>
   ));
@@ -186,7 +186,7 @@ function Table(props) {
 
   const rows = synonymIDs.map(id => (
     <tr key={`${id}row-t${index}`}>
-      <IDCell key={`${id}row-int-id`}  tableIndex={index}  wordID={id}  openTable={props.openTable} />
+      <IDCell key={`${id}row-int-id`}  fetched={props.data[id].synonyms.length > 0}  tableIndex={index}  wordID={id}  openTable={props.openTable} />
       <WordCell key={`${id}row-int-word`}  word={props.data[id].name}  onUpdate={props.onUpdate} />
     </tr>
   ));
@@ -209,9 +209,10 @@ function Table(props) {
 function IDCell(props) {
   const id = props.wordID;
   const index = props.tableIndex;
+  const className = props.fetched ? 'clickable id-cell' : 'not-fetched id-cell';
   return (
     <td
-      className='clickable id-cell'
+      className={className}
       onClick={(e) => props.openTable(id, index)}
     >
       <OverlayTrigger

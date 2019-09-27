@@ -7,8 +7,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+#doc-div {
+  display: inline-flex;
+}
 
 .clickable {
   color: #139CD6; /* Medium cyan */
+  cursor: pointer;
+}
+
+.not-fetched {
+  color: #880000; /* Dark red */
   cursor: pointer;
 }

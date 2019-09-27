@@ -9,10 +9,14 @@
   src: url('./fonts/Poppins-Bold.ttf'); 
 }
 
+#intern-div {
+  display: inline-flex;
+}
 
 .intern-table {
   font-family: Poppins-Regular;
   width: 0 auto;
+  min-width: 215px;
   margin: 20px;
   font-size: 1.15em;
   border: 2px solid #000;
