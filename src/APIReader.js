@@ -1,10 +1,10 @@
 import {APIKey} from './APIKey';
 
 export default class APIReader {
-  constructor() {
-    this.internTable = {};
-    this.lookupTable = {};
-    this.nextID = 0;
+  constructor(internTable={}, lookupTable={}, nextID=0) {
+    this.internTable = internTable;
+    this.lookupTable = lookupTable;
+    this.nextID = nextID;
     this.size = 5;
   }
 
@@ -109,5 +109,68 @@ export default class APIReader {
   incrementID(increment=1) {
     const id = parseInt(this.nextID);
     this.nextID = id + increment;
+  }
+
+
+  /**
+   * Slices the intern and lookup tables to the first and last ID, excluding the last ID. Since
+   * IDs are unique, the first occurence will be the only occurence. If the first tag is not
+   * found, an empty API will be returned. If the last ID is empty or never found, all remaining
+   * data after the first ID will be kept. The iteration will be on the intern table's IDs, as
+   * the lookup table is not in order of internment.
+   * 
+   * @param {*} first Optional. First tag to keep. If none is provided, the first ID will be used.
+   * @param {*} last Optional. First tag to slice off. If none is provided, all data after the first tag is kept.
+   */
+  slice(first='', last='') {
+    if (first ==='' && last === '') {
+      return new APIReader(
+        this.internTable,
+        this.lookupTable,
+        parseInt(this.nextID),
+      )
+    }
+
+    const ids = Object.keys(this.internTable);
+    console.log('API Slice IDs');
+    console.log(ids);
+    const newInternTable = {};
+    const newLookupTable = {};
+    let newNextID = 0;
+
+    let counter = 0;
+
+    /* Skip over head */
+    while ((ids[counter] !== first) && (counter < ids.length)) {
+      counter += 1;
+    }
+
+    /* Build body */
+    while ((ids[counter] !== last) && (counter < ids.length)) {
+      const id = ids[counter];
+      const word = this.internTable[id].name;
+      const synonyms = this.internTable[id].synonyms.slice();
+      newInternTable[id] = {name: word, synonyms: synonyms};
+      newLookupTable[word] = id;
+      counter += 1;
+    }
+    
+    if (counter === ids.length) {
+      newNextID = this.nextID;
+    } else {
+      newNextID = parseInt(ids[counter]) + 1;
+    }
+
+    return new APIReader(
+      newInternTable,
+      newLookupTable,
+      parseInt(newNextID)
+    );
+  }
+
+  release(wordID) {
+    const word = this.internTable[wordID].name;
+    delete this.internTable[wordID];
+    delete this.lookupTable[word];
   }
 }

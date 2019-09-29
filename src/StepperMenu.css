@@ -1,0 +1,15 @@
+#stepper-menu {
+  margin: 10px auto;
+/*  justify-content: center; */
+}
+
+.step-button {
+  margin: 4px;
+}
+
+#step-input {
+  margin: 4px;
+  width: 60px;
+  font-size: 1.15em;
+  text-align: center;
+}
