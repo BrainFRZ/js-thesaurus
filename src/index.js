@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 import App from './App';
 import APIReader from './APIReader';
-import SynonymDiv from './SynonymComponents'
+import {SynonymSearchBox, SynonymList} from './SynonymComponents'
 import InternDiv from './TableComponents';
 
 
@@ -50,24 +50,44 @@ export default class Doc extends React.Component {
       return null;
     }
 
-    const wordID = this.state.wordID;
+    const wordID = this.state.wordID ? this.state.wordID : '';
+    const data = this.state.internTable;
+    const word = data[wordID]
+      ? data[wordID].name
+      : '';
     
-    const synonymDiv = <SynonymDiv
+
+    const searchBox = <SynonymSearchBox
       key={`${wordID}SynDiv${this.state.errors}`}
-      wordID={wordID}
-      internTable={this.state.internTable}
+      word={word}
       onUpdate={this.updateWord}
     />;
+
+    const synonymList = (word === '')
+      ? <p>Please enter a word.</p>
+      : <SynonymList
+          key={`${wordID}SynList`}
+          className='syn-list'
+          wordID={wordID}
+          internTable={data}
+          onClick={this.state.onUpdate}
+        />;
+
 
     const internDiv = <InternDiv
       key={`${wordID}IntDiv`}
-      internTable={this.state.internTable}
+      internTable={data}
       onUpdate={this.updateWord}
     />;
 
+
     return (
       <div id='doc-div'>
-        {synonymDiv}
+        <div id='synonym-div'>
+          {searchBox}
+          {synonymList}
+        </div>
+        
         {internDiv}
       </div>
     );

@@ -7,40 +7,7 @@ import './index.css'
 import './SynonymComponents.css';
 
 
-export default class SynonymDiv extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      wordID: props.wordID,
-      internTable: props.internTable,
-      onUpdate: props.onUpdate,
-    }
-  }
-
-  render() {
-    const wordID = this.state.wordID;
-    if (!wordID) {
-      return (
-        <div id='synonym-div'>
-          <SynonymSearchBox word='' onUpdate={this.state.onUpdate} />
-          <p>Please enter a word.</p>
-        </div>
-      );
-    }
-
-    const word = this.state.internTable[wordID].name;
-    return (
-      <div id='synonym-div'>
-        <SynonymSearchBox word={word} onUpdate={this.state.onUpdate} />
-        <SynonymList wordID={wordID} internTable={this.state.internTable} onClick={this.state.onUpdate} />
-      </div>
-    );
-  }
-}
-
-
-class SynonymSearchBox extends React.Component {
+export class SynonymSearchBox extends React.Component {
   constructor(props) {
     super(props);
 
@@ -90,7 +57,7 @@ class SynonymSearchBox extends React.Component {
 }
 
 
-class SynonymList extends React.Component {
+export class SynonymList extends React.Component {
   constructor(props) {
     super(props);
 
