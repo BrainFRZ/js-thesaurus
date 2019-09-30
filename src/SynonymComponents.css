@@ -1,3 +1,4 @@
 #synonym-list { margin: 10px; }
 #search-box { margin: 10px 10px; }
-#syn-head { color: #27AE60 } /* Dark grass */
+#syn-head { color: #27AE60; } /* Dark grass */
+.to-bottom { vertical-align: bottom; }

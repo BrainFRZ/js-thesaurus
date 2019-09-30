@@ -68,6 +68,7 @@ export class SynonymList extends React.Component {
     };
   }
 
+
   render() {
     const wordID = this.state.wordID;
     console.log(`SynonymList: wordID is ${wordID}`);
@@ -109,6 +110,7 @@ export class SynonymList extends React.Component {
 function SynonymHead(props) {
   const wordID = props.wordID;
   const word = props.word;
+
   return (
     <h2 id='syn-head'>
       <OverlayTrigger
@@ -150,5 +152,18 @@ function SynonymCell(props) {
         </span>
       </OverlayTrigger>
     </li>
+  );
+}
+
+export function CloseSynonymsButton(props) {
+  return (
+    <button
+      type='button'
+      className='to-bottom'
+      id='close-syn-button'
+      onClick={() => props.closeSynonyms(props.api)}
+    >
+      Close synonyms
+    </button>
   );
 }

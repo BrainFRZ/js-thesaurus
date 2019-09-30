@@ -16,7 +16,7 @@
 .intern-table {
   font-family: Poppins-Regular;
   width: 0 auto;
-  min-width: 215px;
+  min-width: 250px !important;
   margin: 20px;
   font-size: 1.15em;
   border: 2px solid #000;

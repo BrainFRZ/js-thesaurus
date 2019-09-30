@@ -1,12 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './index.css';
+
+import {Container, Row, Col} from 'react-bootstrap';
+
 import App from './App';
 import APIReader from './APIReader';
-import {SynonymSearchBox, SynonymList} from './SynonymComponents'
+import {SynonymSearchBox, SynonymList, CloseSynonymsButton} from './SynonymComponents'
 import InternDiv from './TableComponents';
 import StepperMenu from './StepperMenu';
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './index.css';
 
 
 export default class Doc extends React.Component {
@@ -25,6 +29,7 @@ export default class Doc extends React.Component {
 
     this.updateWord = this.updateWord.bind(this);
     this.updateStep = this.updateStep.bind(this);
+    this.closeSynonyms = this.closeSynonyms.bind(this);
   }
 
   componentDidMount() {
@@ -36,13 +41,12 @@ export default class Doc extends React.Component {
   updateWord(wordID, newAPIReader) {
     const step = this.state.activeStep;
     let newHistory;
-    let nextID;
     if (step < this.state.history.length - 1) {
       newHistory = this.state.history.slice(0, step + 1);
     } else {
       newHistory = this.state.history.slice();
     }
-    nextID = newAPIReader.nextID;
+    const nextID = newAPIReader.nextID;
     newHistory.push({
       wordID: wordID,
       nextID: nextID,
@@ -60,6 +64,36 @@ export default class Doc extends React.Component {
   }
 
   updateStep = step => this.setState({activeStep: step});
+
+  async closeSynonyms(api) {
+    this.apiReader = api;
+    let ids = Object.keys(api.internTable);
+    console.log(ids);
+    let idIndex = 0;
+    do {
+      while (idIndex < ids.length) {
+        const id = ids[idIndex];
+        const internData = api.internTable[id];
+        console.log(internData);
+        const word = internData.name;
+        const synonyms = internData.synonyms;
+        console.log(word);
+        console.log(synonyms);
+        if (synonyms.length === 0) {
+          console.log(`Fetching ${word} from closeSynonyms`);
+          await api.internWord(word)
+            .then(() => {
+              this.updateWord(id, api);
+            }, error => {
+              alert(`Unable to reach Thesaurus. Halting closure operation.`);
+              return Promise.reject('Unable to reach Thesaurus');
+            });
+        }
+        idIndex += 1;
+      }
+      ids = Object.keys(api.internTable);
+    } while (idIndex < ids.length);
+  }
 
 
   render() {
@@ -79,21 +113,30 @@ export default class Doc extends React.Component {
     console.log(mountedWordID);
 
     return (
-      <div id='doc-div'>
-        <StepperMenu
-          key={`menu${step}`}
-          activeStep={step}
-          latestStep={this.state.history.length - 1}
-          onUpdate={this.updateStep}
-        />
-        <Thesaurus
-          key={`${step}thesaurus`}
-          apiReader={newAPIReader}
-          internTable={newAPIReader.internTable}
-          wordID={mountedWordID}
-          updateWord={this.updateWord}
-        />
-      </div>
+      <Container>
+        <Row>
+          <Col>
+            <StepperMenu
+              key={`menu${step}`}
+              activeStep={step}
+              latestStep={this.state.history.length - 1}
+              onUpdate={this.updateStep}
+            />
+          </Col>
+        </Row>
+        <Row>
+          <Col xs='auto'>
+            <Thesaurus
+              key={`${step}thesaurus`}
+              apiReader={newAPIReader}
+              internTable={newAPIReader.internTable}
+              wordID={mountedWordID}
+              updateWord={this.updateWord}
+              closeSynonyms={this.closeSynonyms}
+            />
+          </Col>
+        </Row>
+      </Container>
     );
   }
 }
@@ -106,6 +149,7 @@ class Thesaurus extends React.Component {
     this.state = {
       apiReader: props.apiReader,
       updateWord: props.updateWord,
+      closeSynonyms: props.closeSynonyms,
       internTable: props.internTable,
       wordID: props.wordID,
       errors: 0,
@@ -170,16 +214,27 @@ class Thesaurus extends React.Component {
       onUpdate={this.updateWord}
     />;
 
+    const closeSynonymsButton = (word === '')
+      ? null
+      : <CloseSynonymsButton
+          key={`${wordID}CloseButton`}
+          api={this.state.apiReader}
+          closeSynonyms={this.state.closeSynonyms}
+        />
+
 
     return (
-      <div id='thesaurus'>
-        <div id='synonym-div'>
-          {searchBox}
-          {synonymList}
-        </div>
-        
-        {internDiv}
-      </div>
+      <Container>
+        <Row>
+          <Col xs='auto'>{searchBox}</Col>
+          <Col xs='auto'>{closeSynonymsButton}</Col>
+        </Row>
+
+        <Row>
+          <Col>{synonymList}</Col>
+          <Col>{internDiv}</Col>
+        </Row>
+      </Container>
     );
   }
 }

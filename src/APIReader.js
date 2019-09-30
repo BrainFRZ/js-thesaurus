@@ -17,11 +17,13 @@ export default class APIReader {
       if (!internData.synonyms.length) {
         internData.synonyms = await this.getOrFetchSynonyms(word)
                                       .catch(error => {return Promise.reject(error)});
-        console.log(`Fetched synonyms for ${word} (${wordID})`);
+        console.log(`Fetched synonyms for ${word} (${wordID})`)
+        return Promise.resolve(`Fetched synonyms for ${word} (${wordID})`);
       } else {
-        console.log(`Loaded synonyms for ${word} (${wordID})`);
+        console.log(`Loaded synonyms for ${word} (${wordID})`)
+        return Promise.resolve(`Loaded synonyms for ${word} (${wordID})`);
       }
-      return;
+      
     }
 
     wordID = this.nextID;
@@ -39,6 +41,7 @@ export default class APIReader {
                 this.incrementID(-1);
                 return Promise.reject(error)
               });
+    return Promise.resolve(`Interning ${word} as id ${wordID}`);
   }
 
   async getOrFetchSynonyms(word) {

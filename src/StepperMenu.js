@@ -15,7 +15,7 @@ export default class StepperMenu extends React.Component {
       activeStep: props.activeStep,
       latestStep: props.latestStep,
       onUpdate: props.onUpdate,
-      inputVal: props.activeStep + 2,
+      inputVal: props.activeStep + 1,
       loaded: false,
     };
 
@@ -56,9 +56,9 @@ export default class StepperMenu extends React.Component {
   };
 
   handleInputBlur = (evt) => {
-    const newStep = evt.target.value - 2;
+    const newStep = evt.target.value - 1;
     if (newStep < -1 || newStep > this.state.latestStep) {
-      this.setState({inputVal: this.state.activeStep + 2});
+      this.setState({inputVal: this.state.activeStep + 1});
     } else {
       this.state.onUpdate(newStep);
     }
@@ -83,10 +83,10 @@ export default class StepperMenu extends React.Component {
     const nextStep = activeStep + 1;
     const lastStep = latestStep;
 
-    const firstMsg = `<<  Step 1`;
-    const prevMsg  = `<  Step ${(prevStep < firstStep) ? 1 : prevStep + 2}`;
-    const nextMsg  = `Step ${(nextStep > latestStep) ? latestStep + 2 : nextStep + 2}  >`;
-    const lastMsg  = `Step ${lastStep + 2}  >>`;
+    const firstMsg = `<<  Step 0`;
+    const prevMsg  = `<  Step ${(prevStep < firstStep) ? 0 : prevStep + 1}`;
+    const nextMsg  = `Step ${(nextStep > latestStep) ? latestStep + 1 : nextStep + 1}  >`;
+    const lastMsg  = `Step ${lastStep + 1}  >>`;
 
     return (
       <ButtonToolbar id='stepper-menu'>
