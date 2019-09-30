@@ -167,3 +167,19 @@ export function CloseSynonymsButton(props) {
     </button>
   );
 }
+
+export function ClosureHaltButton(props) {
+  const disabled = props.disabled;
+  const label = disabled ? 'Continue Closure' : 'Halt Closure';
+
+  return (
+    <button
+      type='button'
+      className='to-bottom'
+      id='halt-button'
+      onClick={() => props.onClick()}
+    >
+      {label}
+    </button>
+  );
+}

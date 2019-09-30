@@ -5,12 +5,17 @@ import {Container, Row, Col} from 'react-bootstrap';
 
 import App from './App';
 import APIReader from './APIReader';
-import {SynonymSearchBox, SynonymList, CloseSynonymsButton} from './SynonymComponents'
+import {SynonymSearchBox, SynonymList, CloseSynonymsButton, ClosureHaltButton} from './SynonymComponents'
 import InternDiv from './TableComponents';
 import StepperMenu from './StepperMenu';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
+
+
+function sleep(ms) {
+  return new Promise(res => setTimeout(res, ms));
+}
 
 
 export default class Doc extends React.Component {
@@ -23,6 +28,8 @@ export default class Doc extends React.Component {
       activeStep: -1,
       wordID: '',
       loaded: false,
+      closureHalted: false, /* Allows interrupt of closure loop for large closures */
+      nextClosedIndex: 0,
     };
 
     this.APIReader = new APIReader();
@@ -30,6 +37,7 @@ export default class Doc extends React.Component {
     this.updateWord = this.updateWord.bind(this);
     this.updateStep = this.updateStep.bind(this);
     this.closeSynonyms = this.closeSynonyms.bind(this);
+    this.toggleClosureHalted = this.toggleClosureHalted.bind(this);
   }
 
   componentDidMount() {
@@ -65,13 +73,20 @@ export default class Doc extends React.Component {
 
   updateStep = step => this.setState({activeStep: step});
 
+  toggleClosureHalted = () => {
+    console.log(`Doc updating closureHalted to ${!this.state.closureHalted}`);
+    this.setState(prevState => ({
+      closureHalted: !prevState.closureHalted,
+    }));
+  };
+
   async closeSynonyms(api) {
     this.apiReader = api;
     let ids = Object.keys(api.internTable);
     console.log(ids);
-    let idIndex = 0;
+    let idIndex = this.state.nextClosedIndex;
     do {
-      while (idIndex < ids.length) {
+      while (!this.state.closureHalted && (idIndex < ids.length)) {
         const id = ids[idIndex];
         const internData = api.internTable[id];
         console.log(internData);
@@ -82,17 +97,20 @@ export default class Doc extends React.Component {
         if (synonyms.length === 0) {
           console.log(`Fetching ${word} from closeSynonyms`);
           await api.internWord(word)
-            .then(() => {
-              this.updateWord(id, api);
-            }, error => {
-              alert(`Unable to reach Thesaurus. Halting closure operation.`);
-              return Promise.reject('Unable to reach Thesaurus');
-            });
+              .then(() => {
+                this.updateWord(id, api);
+              }, error => {
+                alert(`Unable to reach Thesaurus. Halting closure operation.`);
+                return Promise.reject('Unable to reach Thesaurus');
+              });
+          await sleep(200);
         }
         idIndex += 1;
       }
       ids = Object.keys(api.internTable);
-    } while (idIndex < ids.length);
+    } while (!this.state.closureHalted && (idIndex < ids.length));
+    
+    this.setState({nextClosedIndex: idIndex});
   }
 
 
@@ -127,12 +145,14 @@ export default class Doc extends React.Component {
         <Row>
           <Col xs='auto'>
             <Thesaurus
-              key={`${step}thesaurus`}
+              key={`${step}thesaurus${this.state.closureHalted}`}
               apiReader={newAPIReader}
               internTable={newAPIReader.internTable}
               wordID={mountedWordID}
               updateWord={this.updateWord}
               closeSynonyms={this.closeSynonyms}
+              closureHalted={this.state.closureHalted}
+              toggleHalt={this.toggleClosureHalted}
             />
           </Col>
         </Row>
@@ -150,6 +170,8 @@ class Thesaurus extends React.Component {
       apiReader: props.apiReader,
       updateWord: props.updateWord,
       closeSynonyms: props.closeSynonyms,
+      closureHalted: props.closureHalted,
+      toggleHalt: props.toggleHalt,
       internTable: props.internTable,
       wordID: props.wordID,
       errors: 0,
@@ -222,12 +244,20 @@ class Thesaurus extends React.Component {
           closeSynonyms={this.state.closeSynonyms}
         />
 
+    const closureHaltButton = (word === '')
+      ? null
+      : <ClosureHaltButton
+        key={`${this.state.closureHalted}HaltButton`}
+        disabled={this.state.closureHalted}
+        onClick={this.state.toggleHalt}
+      />;
+
 
     return (
       <Container>
         <Row>
           <Col xs='auto'>{searchBox}</Col>
-          <Col xs='auto'>{closeSynonymsButton}</Col>
+          <Col xs='auto'>{closeSynonymsButton} {closureHaltButton}</Col>
         </Row>
 
         <Row>
